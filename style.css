@@ -175,3 +175,39 @@ button { font: inherit; }
 @media (prefers-reduced-motion:reduce) {
   .cell,.completion-scene.visible { animation:none; transition:none; }
 }
+
+
+/* Difficulty selector */
+.puzzle-heading { display:flex; flex-wrap:wrap; align-items:flex-end; gap:4px 14px; }
+.puzzle-heading > .mini-label { flex-basis:100%; }
+.puzzle-heading h2 { margin-right:4px; }
+.difficulty-control {
+  display:flex; align-items:center; gap:7px; color:var(--muted);
+  font-size:9px; font-weight:700; letter-spacing:.13em;
+}
+.difficulty-control select {
+  appearance:none; border:1px solid #d9dfd4; border-radius:18px;
+  background:#f3f6f0; color:#536b57; padding:7px 25px 7px 11px;
+  font:600 11px "DM Sans",sans-serif; letter-spacing:0;
+  background-image:linear-gradient(45deg,transparent 50%,#788b76 50%),linear-gradient(135deg,#788b76 50%,transparent 50%);
+  background-position:calc(100% - 12px) 12px,calc(100% - 8px) 12px;
+  background-size:4px 4px,4px 4px; background-repeat:no-repeat; cursor:pointer;
+}
+.cell.digit-flash {
+  background:#e3eadf !important;
+  color:#526e56 !important;
+  animation: digitPulse .6s ease-in-out 3;
+}
+.number-button.digit-flash {
+  background:#788b76; color:#fffdf7; border-color:#788b76;
+  animation: digitPulse .6s ease-in-out 3;
+}
+@keyframes digitPulse {
+  0%,100% { box-shadow:inset 0 0 0 0 rgba(104,132,103,0); }
+  50% { box-shadow:inset 0 0 0 2px rgba(104,132,103,.35); }
+}
+@media (max-width:560px) {
+  .puzzle-heading { gap:4px 9px; }
+  .puzzle-heading h2 { flex-basis:100%; }
+  .difficulty-control { margin-top:3px; }
+}
