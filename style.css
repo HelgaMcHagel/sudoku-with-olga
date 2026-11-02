@@ -248,3 +248,31 @@ button { font: inherit; }
 }
 .timer-toggle:hover { color:var(--sage); }
 #timer-display[hidden] { display:none; }
+
+
+/* More readable interface typography */
+.header-note { font-size:13px; }
+.eyebrow,.mini-label,.side-kicker { font-size:11px; }
+.subtitle { font-size:15px; }
+.status-row { font-size:13px; }
+.difficulty-control { font-size:10px; }
+.difficulty-control select { font-size:12px; }
+.tool-button,.text-button { font-size:14px; }
+.primary-button { font-size:14px; }
+.timer-wrap strong { font-size:21px; }
+.timer-toggle { font-size:12px; }
+.side-note p { font-size:14px; }
+.how-copy { font-size:13px !important; }
+.site-footer { font-size:12px; }
+.completion-kicker { font-size:11px; }
+.completion-subtitle { font-size:13px; }
+@media (max-width:800px) {
+  .side-note h3 { font-size:21px; }
+}
+@media (max-width:560px) {
+  .status-row { font-size:11px; }
+  .difficulty-control { font-size:10px; }
+  .tool-button,.text-button { font-size:13px; }
+  .site-footer { font-size:11px; }
+  .timer-toggle { font-size:11px; }
+}
