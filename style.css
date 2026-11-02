@@ -237,3 +237,14 @@ button { font: inherit; }
   .notes-grid { font-size:13px; }
   .number-button { min-height:52px; font-size:24px; }
 }
+
+
+/* Optional, unobtrusive timer visibility */
+.timer-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.timer-toggle {
+  border:0; background:transparent; color:var(--muted);
+  padding:3px 0; font:500 10px "DM Sans",sans-serif;
+  text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+}
+.timer-toggle:hover { color:var(--sage); }
+#timer-display[hidden] { display:none; }
