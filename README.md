@@ -13,6 +13,9 @@ Open `index.html` in a modern browser. No build step or dependencies are require
 5. GitHub will provide the published website URL.
 
 ## Current version
+- A date-seeded Daily Sudoku: everyone receives the same Medium puzzle for the same calendar day.
+- Unlimited Practice puzzles with Easy, Medium, and Hard settings.
+- Daily puzzle progress is saved locally in the browser, so players can return where they left off without creating an account.
 - Randomly generated Sudoku boards with a unique solution.
 - Large, high-contrast entered digits; small pencil-mark notes.
 - Stronger 3×3 box boundaries.
@@ -21,4 +24,4 @@ Open `index.html` in a modern browser. No build step or dependencies are require
 - Responsive layout for desktop and mobile.
 
 ## Notes
-This is an initial playable prototype. The current Easy setting removes a gentle number of clues; formal difficulty grading and logic-technique validation can be added later. Google Fonts are loaded from Google Fonts; system fallbacks are provided.
+This is an initial playable prototype. Practice difficulty currently uses clue-removal targets rather than formal human-solving difficulty grading. Daily puzzles use a fixed Medium clue-removal target; logic-technique validation can be added later. Google Fonts are loaded from Google Fonts; system fallbacks are provided.
