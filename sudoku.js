@@ -124,6 +124,7 @@
     startTimer(); render();
   }
   function render() {
+    completedNumbers=findCompletedNumbers();
     boardEl.innerHTML="";
     for(let r=0;r<9;r++) for(let c=0;c<9;c++) {
       const n=values[r][c], cell=document.createElement("button");
@@ -138,6 +139,7 @@
         if(n && n===values[sr][sc]) cell.classList.add("same-number");
       }
       if(n && hasConflict(r,c,n)) cell.classList.add("conflict");
+      if(n && completedNumbers.has(n)) cell.classList.add("completed-value");
       if(celebratedCells.has(r*9+c)) cell.classList.add("section-complete");
       if(n) cell.textContent=n;
       else if(notes[r][c].size) {
