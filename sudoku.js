@@ -22,7 +22,7 @@
 
   const copy = grid => grid.map(row => [...row]);
   let randomSource = Math.random;
-  const shuffle = arr => [...arr].sort(() => randomSource() - .5);
+  const shuffle = arr => { const out=[...arr]; for(let i=out.length-1;i>0;i--){const j=Math.floor(randomSource()*(i+1));[out[i],out[j]]=[out[j],out[i]];} return out; };
   const dailyModeButton = document.getElementById("daily-mode-button");
   const practiceModeButton = document.getElementById("practice-mode-button");
   const dailyMeta = document.getElementById("daily-meta");
@@ -265,9 +265,10 @@
   }
   function undo() {
     const last=history.pop(); if(!last) return;
-    values=last.values; notes=last.notes; mistakes=last.mistakes;
+    values=last.values; notes=last.notes; mistakes=last.mistakes; started=true;
+    document.getElementById("completion-scene").classList.remove("visible");
     mistakesEl.textContent=`Mistakes: ${mistakes}`;
-    statusEl.textContent="Last move undone."; render(); saveDailyProgress();
+    statusEl.textContent="Last move undone."; startTimer(); render(); saveDailyProgress();
   }
   function hint() {
     if(!selected) { statusEl.textContent="Choose a cell for a gentle hint."; return; }
