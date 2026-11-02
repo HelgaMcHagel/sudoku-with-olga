@@ -12,6 +12,11 @@
   let celebrationTimer = null;
   let celebratedCells = new Set();
   let completedNumbers = new Set();
+  let flashedNumbers = new Set();
+  let digitFlashTimer = null;
+  let difficulty = "easy";
+  const difficultySettings = { easy: 36, medium: 46, hard: 52 };
+  const difficultySelect = document.getElementById("difficulty-select");
 
   const copy = grid => grid.map(row => [...row]);
   const shuffle = arr => [...arr].sort(() => Math.random() - .5);
@@ -60,13 +65,13 @@
     const positions=shuffle(Array.from({length:81},(_,i)=>i));
     let removed=0;
     for(const pos of positions) {
-      if(removed>=38) break;
+      if(removed>=difficultySettings[difficulty]) break;
       const r=Math.floor(pos/9), c=pos%9, old=p[r][c];
       p[r][c]=0;
       if(countSolutions(copy(p))!==1) p[r][c]=old;
       else removed++;
     }
-    return {p, solved};
+    return {p, solved, removed};
   }
   function startTimer() {
     clearInterval(timerId);
@@ -110,15 +115,24 @@
     }
     return result;
   }
+  function celebrateNewDigits(before) {
+    const now=findCompletedNumbers();
+    const newlyCompleted=[...now].filter(n=>!before.has(n));
+    if(!newlyCompleted.length) return;
+    newlyCompleted.forEach(n=>flashedNumbers.add(n));
+    clearTimeout(digitFlashTimer);
+    digitFlashTimer=setTimeout(()=>{ flashedNumbers.clear(); render(); },1800);
+  }
   function newGame() {
     const generated=makePuzzle();
     puzzle=copy(generated.p); solution=copy(generated.solved); values=copy(puzzle);
     notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     selected=null; mistakes=0; seconds=0; history=[]; started=true;
-    clearTimeout(celebrationTimer); celebratedCells.clear(); completedNumbers.clear();
+    clearTimeout(celebrationTimer); clearTimeout(digitFlashTimer);
+    celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; mistakesEl.textContent="Mistakes: 0";
-    statusEl.textContent="A new easy puzzle is ready.";
+    statusEl.textContent=`A new ${difficulty} puzzle is ready.`;
     notesMode=false; notesToggle.setAttribute("aria-pressed","false");
     numberButtons.forEach(b=>b.classList.remove("active"));
     startTimer(); render();
@@ -139,7 +153,7 @@
         if(n && n===values[sr][sc]) cell.classList.add("same-number");
       }
       if(n && hasConflict(r,c,n)) cell.classList.add("conflict");
-      if(n && completedNumbers.has(n)) cell.classList.add("completed-value");
+      if(n && flashedNumbers.has(n)) cell.classList.add("digit-flash");
       if(celebratedCells.has(r*9+c)) cell.classList.add("section-complete");
       if(n) cell.textContent=n;
       else if(notes[r][c].size) {
@@ -163,7 +177,8 @@
     numberButtons.forEach(btn=>{
       const n=Number(btn.dataset.number);
       btn.disabled=completedNumbers.has(n);
-      btn.classList.toggle("number-complete",completedNumbers.has(n));
+      btn.classList.remove("number-complete");
+      btn.classList.toggle("digit-flash",flashedNumbers.has(n));
     });
   }
   function saveHistory() { history.push({values:copy(values),notes:notes.map(row=>row.map(s=>new Set(s))),mistakes}); }
@@ -179,6 +194,7 @@
     }
     if(values[r][c]===n) return;
     const beforeUnits=completedUnits();
+    const beforeDigits=findCompletedNumbers();
     saveHistory();
     values[r][c]=n; notes[r][c].clear();
     if(n!==solution[r][c]) {
@@ -186,6 +202,7 @@
       statusEl.textContent="Not quite. Take another look.";
     } else statusEl.textContent="Nice placement.";
     celebrateNewUnits(beforeUnits);
+    celebrateNewDigits(beforeDigits);
     render();
     if(values.every((row,ri)=>row.every((v,ci)=>v===solution[ri][ci]))) {
       started=false; clearInterval(timerId);
@@ -215,11 +232,16 @@
   document.getElementById("erase-button").addEventListener("click",erase);
   document.getElementById("undo-button").addEventListener("click",undo);
   document.getElementById("hint-button").addEventListener("click",hint);
+  difficultySelect.addEventListener("change",()=>{
+    difficulty=difficultySelect.value;
+    newGame();
+  });
   document.getElementById("new-game-button").addEventListener("click",newGame);
   document.getElementById("reset-button").addEventListener("click",()=>{
     values=copy(puzzle); notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     mistakes=0; seconds=0; started=true; history=[]; mistakesEl.textContent="Mistakes: 0";
-    clearTimeout(celebrationTimer); celebratedCells.clear(); completedNumbers.clear();
+    clearTimeout(celebrationTimer); clearTimeout(digitFlashTimer);
+    celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; statusEl.textContent="Puzzle restarted."; startTimer(); render();
   });
