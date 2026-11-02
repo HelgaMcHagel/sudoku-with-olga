@@ -163,7 +163,10 @@
     digitFlashTimer=setTimeout(()=>{ flashedNumbers.clear(); render(); },1800);
   }
   function newGame() {
-    const generated=makePuzzle();
+    updateModeUI();
+    const daily=gameMode==="daily";
+    difficulty=daily?"medium":difficultySelect.value;
+    const generated=makePuzzle(daily?seedFromString("sudoku-with-olga-"+todayKey()+"-medium"):null);
     puzzle=copy(generated.p); solution=copy(generated.solved); values=copy(puzzle);
     notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     selected=null; mistakes=0; seconds=0; history=[]; started=true;
@@ -171,10 +174,14 @@
     celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; mistakesEl.textContent="Mistakes: 0";
-    statusEl.textContent=`A new ${difficulty} puzzle is ready · ${81-generated.removed} starting clues.`;
+    statusEl.textContent=daily?"Today's shared Medium puzzle is ready.":`A new ${difficulty} puzzle is ready · ${81-generated.removed} starting clues.`;
     notesMode=false; notesToggle.setAttribute("aria-pressed","false");
     numberButtons.forEach(b=>b.classList.remove("active"));
-    startTimer(); render();
+    const restored=daily&&restoreDailyProgress();
+    if(!restored){timerEl.textContent="00:00";mistakesEl.textContent="Mistakes: 0";}
+    if(!started)clearInterval(timerId);else startTimer();
+    render();
+    if(daily&&!restored)saveDailyProgress();
   }
   function render() {
     completedNumbers=findCompletedNumbers();
@@ -229,7 +236,7 @@
       if(values[r][c]) return;
       saveHistory();
       if(notes[r][c].has(n)) notes[r][c].delete(n); else notes[r][c].add(n);
-      render(); return;
+      render(); saveDailyProgress(); return;
     }
     if(values[r][c]===n) return;
     const beforeUnits=completedUnits();
@@ -248,18 +255,19 @@
       statusEl.textContent=`Beautifully done. You finished in ${formatTime(seconds)}.`;
       document.getElementById("completion-scene").classList.add("visible");
     }
+    saveDailyProgress();
   }
   function erase() {
     if(!selected) return;
     const [r,c]=selected;
     if(puzzle[r][c]) return;
-    saveHistory(); values[r][c]=0; notes[r][c].clear(); render();
+    saveHistory(); values[r][c]=0; notes[r][c].clear(); render(); saveDailyProgress();
   }
   function undo() {
     const last=history.pop(); if(!last) return;
     values=last.values; notes=last.notes; mistakes=last.mistakes;
     mistakesEl.textContent=`Mistakes: ${mistakes}`;
-    statusEl.textContent="Last move undone."; render();
+    statusEl.textContent="Last move undone."; render(); saveDailyProgress();
   }
   function hint() {
     if(!selected) { statusEl.textContent="Choose a cell for a gentle hint."; return; }
@@ -281,14 +289,16 @@
     difficulty=difficultySelect.value;
     newGame();
   });
-  document.getElementById("new-game-button").addEventListener("click",newGame);
+  dailyModeButton.addEventListener("click",()=>{if(gameMode!=="daily"){gameMode="daily";newGame();}});
+  practiceModeButton.addEventListener("click",()=>{if(gameMode!=="practice"){gameMode="practice";newGame();}});
+  newGameButton.addEventListener("click",newGame);
   document.getElementById("reset-button").addEventListener("click",()=>{
     values=copy(puzzle); notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     mistakes=0; seconds=0; started=true; history=[]; mistakesEl.textContent="Mistakes: 0";
     clearTimeout(celebrationTimer); clearTimeout(digitFlashTimer);
     celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
-    timerEl.textContent="00:00"; statusEl.textContent="Puzzle restarted."; startTimer(); render();
+    timerEl.textContent="00:00"; statusEl.textContent="Puzzle restarted."; startTimer(); render(); saveDailyProgress();
   });
   notesToggle.addEventListener("click",()=>{
     notesMode=!notesMode; notesToggle.setAttribute("aria-pressed",String(notesMode));
