@@ -289,3 +289,11 @@ button { font: inherit; }
 @media (max-width:480px) {
   .cell { font-size:clamp(19px, 5.5vw, 24px); }
 }
+
+
+/* Size Sudoku digits in proportion to the board, not the viewport */
+.board-stage { container-type:inline-size; }
+.cell { font-size:clamp(22px, 4.6cqi, 35px); }
+@media (max-width:800px) {
+  .cell { font-size:clamp(22px, 5.8cqi, 30px); }
+}
