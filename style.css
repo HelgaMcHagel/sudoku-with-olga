@@ -211,3 +211,29 @@ button { font: inherit; }
   .puzzle-heading h2 { flex-basis:100%; }
   .difficulty-control { margin-top:3px; }
 }
+
+
+/* More comfortable playing size on larger displays */
+@media (min-width:1200px) {
+  .page-shell { max-width:1400px; padding-left:38px; padding-right:38px; }
+  .game-layout { grid-template-columns:minmax(0, 820px) 270px; gap:48px; }
+  .game-card { padding:30px 34px 27px; }
+  .board-stage,.number-pad { max-width:700px; }
+  .sudoku-board { width:100%; }
+  .cell { font-size:clamp(31px, 2.9vw, 40px); }
+  .notes-grid { inset:4px; font-size:clamp(9px, .9vw, 12px); }
+  .number-pad { gap:9px; margin-top:21px; margin-bottom:16px; }
+  .number-button { min-height:48px; font-size:22px; border-radius:10px; }
+  .tool-button,.text-button { font-size:13px; padding:9px 14px; }
+  .primary-button { font-size:14px; padding:13px 27px; }
+  .game-topline h2 { font-size:22px; }
+  .status-row { font-size:12px; }
+}
+@media (min-width:1600px) {
+  .page-shell { max-width:1500px; }
+  .game-layout { grid-template-columns:minmax(0, 900px) 280px; gap:54px; }
+  .board-stage,.number-pad { max-width:760px; }
+  .cell { font-size:42px; }
+  .notes-grid { font-size:13px; }
+  .number-button { min-height:52px; font-size:24px; }
+}
