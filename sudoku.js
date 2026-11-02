@@ -1,6 +1,8 @@
 (() => {
   const boardEl = document.getElementById("sudoku-board");
   const timerEl = document.getElementById("timer");
+  const timerDisplay = document.getElementById("timer-display");
+  const timerToggle = document.getElementById("timer-toggle");
   const statusEl = document.getElementById("game-status");
   const mistakesEl = document.getElementById("mistake-count");
   const notesToggle = document.getElementById("notes-toggle");
@@ -232,6 +234,12 @@
   document.getElementById("erase-button").addEventListener("click",erase);
   document.getElementById("undo-button").addEventListener("click",undo);
   document.getElementById("hint-button").addEventListener("click",hint);
+  timerToggle.addEventListener("click",()=>{
+    const visible = timerToggle.getAttribute("aria-pressed") !== "true";
+    timerToggle.setAttribute("aria-pressed",String(visible));
+    timerDisplay.hidden = !visible;
+    timerToggle.textContent = visible ? "Hide timer" : "Show timer";
+  });
   difficultySelect.addEventListener("change",()=>{
     difficulty=difficultySelect.value;
     newGame();
