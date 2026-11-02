@@ -276,3 +276,16 @@ button { font: inherit; }
   .site-footer { font-size:11px; }
   .timer-toggle { font-size:11px; }
 }
+
+
+/* Fine-tune board digits: clear, but not oversized */
+.cell { font-size:clamp(20px, 2.8vw, 28px); }
+@media (min-width:1200px) {
+  .cell { font-size:clamp(28px, 2.6vw, 35px); }
+}
+@media (min-width:1600px) {
+  .cell { font-size:37px; }
+}
+@media (max-width:480px) {
+  .cell { font-size:clamp(19px, 5.5vw, 24px); }
+}
