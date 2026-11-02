@@ -45,7 +45,31 @@
           <span id="mistake-count">Mistakes: 0</span>
         </div>
 
-        <div id="sudoku-board" class="sudoku-board" role="grid" aria-label="Sudoku board"></div>
+        <div class="board-stage">
+          <div id="sudoku-board" class="sudoku-board" role="grid" aria-label="Sudoku board"></div>
+          <div id="completion-scene" class="completion-scene" aria-live="polite">
+            <svg class="fuji-art" viewBox="0 0 520 300" role="img" aria-labelledby="fuji-title">
+              <title id="fuji-title">A quiet Mount Fuji sunrise</title>
+              <circle cx="390" cy="76" r="43" fill="#d9a17f" opacity=".9"/>
+              <path d="M30 244 Q112 225 184 242 T340 238 T510 241 V300 H30Z" fill="#dfe6d9"/>
+              <path d="M93 246 L242 76 L390 246Z" fill="#758a78"/>
+              <path d="M205 118 L242 76 L279 118 L260 111 L245 127 L230 112 L218 121Z" fill="#fffaf0"/>
+              <path d="M242 76 L390 246 H242Z" fill="#647b6b" opacity=".42"/>
+              <path d="M30 258 Q145 238 260 260 T510 254" fill="none" stroke="#a9b9a4" stroke-width="2"/>
+              <path d="M54 274 Q175 255 292 275 T500 270" fill="none" stroke="#c4cdbd" stroke-width="2"/>
+              <g fill="#b96758" opacity=".88">
+                <circle cx="90" cy="92" r="5"/><circle cx="101" cy="82" r="5"/><circle cx="111" cy="94" r="5"/><circle cx="100" cy="104" r="5"/>
+                <circle cx="440" cy="154" r="4"/><circle cx="449" cy="145" r="4"/><circle cx="458" cy="155" r="4"/><circle cx="449" cy="164" r="4"/>
+              </g>
+              <g stroke="#a96d5c" stroke-width="2" fill="none" stroke-linecap="round">
+                <path d="M101 104 Q82 122 70 143"/><path d="M449 164 Q462 181 472 196"/>
+              </g>
+            </svg>
+            <p class="completion-kicker">A MOMENT WELL SPENT</p>
+            <p class="completion-message">Well done. You found your quiet moment.</p>
+            <p class="completion-subtitle">Take a breath. Enjoy the stillness.</p>
+          </div>
+        </div>
 
         <div class="number-pad" aria-label="Choose a number">
           <button class="number-button" data-number="1">1</button>
