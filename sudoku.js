@@ -302,6 +302,7 @@
     timerToggle.textContent = visible ? "Hide timer" : "Show timer";
   });
   difficultySelect.addEventListener("change",()=>{
+    saveGameProgress();
     difficulty=difficultySelect.value;
     newGame(true);
   });
