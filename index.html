@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f1e8">
+  <title>Sudoku with Olga — Find your quiet moment</title>
+  <meta name="description" content="A little logic. A little peace. A moment for yourself. Play a calm, ad-free Sudoku game with Olga.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="Sudoku with Olga home">
+        <span class="brand-mark" aria-hidden="true">◌</span>
+        <span>Sudoku <i>with</i> Olga</span>
+      </a>
+      <span class="header-note">A quiet space for a little logic</span>
+    </header>
+
+    <section class="intro">
+      <p class="eyebrow">YOUR DAILY MOMENT OF CALM</p>
+      <h1>Find your quiet moment.</h1>
+      <p class="subtitle">A little logic. A little peace. A moment for yourself.</p>
+    </section>
+
+    <section class="game-layout" aria-label="Sudoku game">
+      <div class="game-card">
+        <div class="game-topline">
+          <div>
+            <span class="mini-label">PUZZLE</span>
+            <h2>Take it one number at a time.</h2>
+          </div>
+          <div class="timer-wrap">
+            <span class="mini-label">TIME</span>
+            <strong id="timer">00:00</strong>
+          </div>
+        </div>
+
+        <div class="status-row">
+          <span id="game-status" role="status">A new easy puzzle is ready.</span>
+          <span id="mistake-count">Mistakes: 0</span>
+        </div>
+
+        <div id="sudoku-board" class="sudoku-board" role="grid" aria-label="Sudoku board"></div>
+
+        <div class="number-pad" aria-label="Choose a number">
+          <button class="number-button" data-number="1">1</button>
+          <button class="number-button" data-number="2">2</button>
+          <button class="number-button" data-number="3">3</button>
+          <button class="number-button" data-number="4">4</button>
+          <button class="number-button" data-number="5">5</button>
+          <button class="number-button" data-number="6">6</button>
+          <button class="number-button" data-number="7">7</button>
+          <button class="number-button" data-number="8">8</button>
+          <button class="number-button" data-number="9">9</button>
+        </div>
+
+        <div class="tools-row">
+          <button id="notes-toggle" class="tool-button" aria-pressed="false">✎ Notes</button>
+          <button id="erase-button" class="tool-button">⌫ Erase</button>
+          <button id="undo-button" class="tool-button">↶ Undo</button>
+          <button id="hint-button" class="tool-button">Hint</button>
+        </div>
+
+        <div class="bottom-row">
+          <button id="new-game-button" class="primary-button">New puzzle <span aria-hidden="true">↗</span></button>
+          <button id="reset-button" class="text-button">Restart</button>
+        </div>
+      </div>
+
+      <aside class="side-note">
+        <div class="enso" aria-hidden="true">円</div>
+        <p class="side-kicker">A SMALL REMINDER</p>
+        <h3>There is no need to hurry.</h3>
+        <p>Sudoku is simply a little exercise in noticing, thinking, and enjoying the moment.</p>
+        <div class="side-divider"></div>
+        <p class="how-title">A gentle place to begin</p>
+        <p class="how-copy">Fill every row, column, and 3×3 box with the numbers 1 to 9. Each number appears only once in each.</p>
+      </aside>
+    </section>
+
+    <footer class="site-footer">
+      <span>Sudoku with Olga</span>
+      <span>Made for slower moments <b>·</b> No ads, no rush.</span>
+    </footer>
+  </main>
+  <script src="sudoku.js"></script>
+</body>
+</html>
