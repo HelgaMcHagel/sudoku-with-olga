@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <main class="page-shell">
@@ -41,8 +41,11 @@
             </label>
           </div>
           <div class="timer-wrap">
-            <span class="mini-label">TIME</span>
-            <strong id="timer">00:00</strong>
+            <div id="timer-display">
+              <span class="mini-label">TIME</span>
+              <strong id="timer">00:00</strong>
+            </div>
+            <button id="timer-toggle" class="timer-toggle" type="button" aria-pressed="true">Hide timer</button>
           </div>
         </div>
 
@@ -118,6 +121,6 @@
       <span>Made for slower moments <b>·</b> No ads, no rush.</span>
     </footer>
   </main>
-  <script src="sudoku.js?v=4"></script>
+  <script src="sudoku.js?v=5"></script>
 </body>
 </html>
