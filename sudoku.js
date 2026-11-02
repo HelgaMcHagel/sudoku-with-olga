@@ -32,7 +32,9 @@
   const todayKey = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
   const seedFromString = value => { let h=2166136261; for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619);} return h>>>0; };
   const seededRandom = seed => { let a=seed>>>0; return () => { a+=0x6D2B79F5; let t=a; t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; }; };
-  const dailyStorageKey = () => "sudoku-with-olga-daily-"+todayKey();
+  const progressStorageKey = () => gameMode==="daily"
+    ? "sudoku-with-olga-daily-"+todayKey()
+    : "sudoku-with-olga-practice-"+difficulty;
   function updateModeUI() {
     const daily=gameMode==="daily";
     dailyModeButton.classList.toggle("active",daily); practiceModeButton.classList.toggle("active",!daily);
@@ -40,18 +42,31 @@
     dailyMeta.hidden=!daily; difficultySelect.hidden=daily; newGameButton.hidden=daily;
     dailyDateEl.textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
   }
-  function saveDailyProgress() {
-    if(gameMode!=="daily"||!values.length)return;
-    try { localStorage.setItem(dailyStorageKey(),JSON.stringify({values,notes:notes.map(row=>row.map(set=>[...set])),mistakes,seconds,completed:!started})); } catch (_) {}
-  }
-  function restoreDailyProgress() {
+  function saveGameProgress() {
+    if(!values.length)return;
     try {
-      const raw=localStorage.getItem(dailyStorageKey()); if(!raw)return false;
-      const saved=JSON.parse(raw); if(!Array.isArray(saved.values)||saved.values.length!==9)return false;
-      values=saved.values.map(row=>row.map(Number)); notes=saved.notes.map(row=>row.map(items=>new Set(items)));
+      localStorage.setItem(progressStorageKey(),JSON.stringify({
+        puzzle,solution,values,notes:notes.map(row=>row.map(set=>[...set])),
+        mistakes,seconds,completed:!started
+      }));
+    } catch (_) {}
+  }
+  function restoreGameProgress() {
+    try {
+      const raw=localStorage.getItem(progressStorageKey()); if(!raw)return false;
+      const saved=JSON.parse(raw);
+      const validGrid=grid=>Array.isArray(grid)&&grid.length===9&&grid.every(row=>Array.isArray(row)&&row.length===9);
+      if(!validGrid(saved.puzzle)||!validGrid(saved.solution)||!validGrid(saved.values)||
+         !Array.isArray(saved.notes)||saved.notes.length!==9)return false;
+      puzzle=saved.puzzle.map(row=>row.map(Number));
+      solution=saved.solution.map(row=>row.map(Number));
+      values=saved.values.map(row=>row.map(Number));
+      notes=saved.notes.map(row=>row.map(items=>new Set(items)));
       mistakes=Number(saved.mistakes)||0; seconds=Number(saved.seconds)||0; started=!saved.completed;
       mistakesEl.textContent="Mistakes: "+mistakes; timerEl.textContent=formatTime(seconds);
-      statusEl.textContent=saved.completed?"Today's puzzle is complete. Well done.":"Welcome back. Your puzzle is just as you left it.";
+      statusEl.textContent=saved.completed
+        ? (gameMode==="daily"?"Today's puzzle is complete. Well done.":"Practice puzzle completed. Well done.")
+        : "Welcome back. Your puzzle is just as you left it.";
       if(saved.completed)document.getElementById("completion-scene").classList.add("visible");
       return true;
     } catch (_) { return false; }
@@ -114,7 +129,7 @@
   }
   function startTimer() {
     clearInterval(timerId);
-    timerId=setInterval(()=>{ if(started) { seconds++; timerEl.textContent=formatTime(seconds); if(seconds%5===0)saveDailyProgress(); } },1000);
+    timerId=setInterval(()=>{ if(started) { seconds++; timerEl.textContent=formatTime(seconds); if(seconds%5===0)saveGameProgress(); } },1000);
   }
   const formatTime = n => `${String(Math.floor(n/60)).padStart(2,"0")}:${String(n%60).padStart(2,"0")}`;
   function completedUnits() {
@@ -162,7 +177,7 @@
     clearTimeout(digitFlashTimer);
     digitFlashTimer=setTimeout(()=>{ flashedNumbers.clear(); render(); },1800);
   }
-  function newGame() {
+  function newGame(forceNew=false) {
     updateModeUI();
     const daily=gameMode==="daily";
     difficulty=daily?"medium":difficultySelect.value;
@@ -177,11 +192,11 @@
     statusEl.textContent=daily?"Today's shared Medium puzzle is ready.":`A new ${difficulty} puzzle is ready · ${81-generated.removed} starting clues.`;
     notesMode=false; notesToggle.setAttribute("aria-pressed","false");
     numberButtons.forEach(b=>b.classList.remove("active"));
-    const restored=daily&&restoreDailyProgress();
+    const restored=!forceNew&&restoreGameProgress();
     if(!restored){timerEl.textContent="00:00";mistakesEl.textContent="Mistakes: 0";}
     if(!started)clearInterval(timerId);else startTimer();
     render();
-    if(daily&&!restored)saveDailyProgress();
+    if(!restored)saveGameProgress();
   }
   function render() {
     completedNumbers=findCompletedNumbers();
@@ -236,7 +251,7 @@
       if(values[r][c]) return;
       saveHistory();
       if(notes[r][c].has(n)) notes[r][c].delete(n); else notes[r][c].add(n);
-      render(); saveDailyProgress(); return;
+      render(); saveGameProgress(); return;
     }
     if(values[r][c]===n) return;
     const beforeUnits=completedUnits();
@@ -255,20 +270,20 @@
       statusEl.textContent=`Beautifully done. You finished in ${formatTime(seconds)}.`;
       document.getElementById("completion-scene").classList.add("visible");
     }
-    saveDailyProgress();
+    saveGameProgress();
   }
   function erase() {
     if(!selected) return;
     const [r,c]=selected;
     if(puzzle[r][c]) return;
-    saveHistory(); values[r][c]=0; notes[r][c].clear(); render(); saveDailyProgress();
+    saveHistory(); values[r][c]=0; notes[r][c].clear(); render(); saveGameProgress();
   }
   function undo() {
     const last=history.pop(); if(!last) return;
     values=last.values; notes=last.notes; mistakes=last.mistakes; started=true;
     document.getElementById("completion-scene").classList.remove("visible");
     mistakesEl.textContent=`Mistakes: ${mistakes}`;
-    statusEl.textContent="Last move undone."; startTimer(); render(); saveDailyProgress();
+    statusEl.textContent="Last move undone."; startTimer(); render(); saveGameProgress();
   }
   function hint() {
     if(!selected) { statusEl.textContent="Choose a cell for a gentle hint."; return; }
@@ -288,18 +303,22 @@
   });
   difficultySelect.addEventListener("change",()=>{
     difficulty=difficultySelect.value;
-    newGame();
+    newGame(true);
   });
-  dailyModeButton.addEventListener("click",()=>{if(gameMode!=="daily"){gameMode="daily";newGame();}});
-  practiceModeButton.addEventListener("click",()=>{if(gameMode!=="practice"){gameMode="practice";newGame();}});
-  newGameButton.addEventListener("click",newGame);
+  dailyModeButton.addEventListener("click",()=>{
+    if(gameMode!=="daily"){saveGameProgress();gameMode="daily";newGame();}
+  });
+  practiceModeButton.addEventListener("click",()=>{
+    if(gameMode!=="practice"){saveGameProgress();gameMode="practice";newGame();}
+  });
+  newGameButton.addEventListener("click",()=>newGame(true));
   document.getElementById("reset-button").addEventListener("click",()=>{
     values=copy(puzzle); notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     mistakes=0; seconds=0; started=true; history=[]; mistakesEl.textContent="Mistakes: 0";
     clearTimeout(celebrationTimer); clearTimeout(digitFlashTimer);
     celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
-    timerEl.textContent="00:00"; statusEl.textContent="Puzzle restarted."; startTimer(); render(); saveDailyProgress();
+    timerEl.textContent="00:00"; statusEl.textContent="Puzzle restarted."; startTimer(); render(); saveGameProgress();
   });
   notesToggle.addEventListener("click",()=>{
     notesMode=!notesMode; notesToggle.setAttribute("aria-pressed",String(notesMode));
