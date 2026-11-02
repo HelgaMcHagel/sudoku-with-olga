@@ -9,6 +9,9 @@
   let puzzle = [], solution = [], values = [], notes = [], selected = null;
   let notesMode = false, mistakes = 0, seconds = 0, timerId = null, history = [];
   let started = false;
+  let celebrationTimer = null;
+  let celebratedCells = new Set();
+  let completedNumbers = new Set();
 
   const copy = grid => grid.map(row => [...row]);
   const shuffle = arr => [...arr].sort(() => Math.random() - .5);
@@ -70,11 +73,50 @@
     timerId=setInterval(()=>{ if(started) { seconds++; timerEl.textContent=formatTime(seconds); } },1000);
   }
   const formatTime = n => `${String(Math.floor(n/60)).padStart(2,"0")}:${String(n%60).padStart(2,"0")}`;
+  function completedUnits() {
+    const units = [];
+    for (let r=0;r<9;r++) {
+      const cells = Array.from({length:9},(_,c)=>[r,c]);
+      if (cells.every(([y,x])=>values[y][x]===solution[y][x])) units.push(cells);
+    }
+    for (let c=0;c<9;c++) {
+      const cells = Array.from({length:9},(_,r)=>[r,c]);
+      if (cells.every(([y,x])=>values[y][x]===solution[y][x])) units.push(cells);
+    }
+    for (let br=0;br<9;br+=3) for (let bc=0;bc<9;bc+=3) {
+      const cells=[];
+      for(let r=br;r<br+3;r++) for(let c=bc;c<bc+3;c++) cells.push([r,c]);
+      if(cells.every(([y,x])=>values[y][x]===solution[y][x])) units.push(cells);
+    }
+    return units;
+  }
+  function celebrateNewUnits(before) {
+    const previous = new Set(before.map(unit=>unit.map(([r,c])=>r*9+c).sort((a,b)=>a-b).join(",")));
+    const newlyCompleted = completedUnits().filter(unit=>!previous.has(unit.map(([r,c])=>r*9+c).sort((a,b)=>a-b).join(",")));
+    if (!newlyCompleted.length) return;
+    newlyCompleted.forEach(unit=>unit.forEach(([r,c])=>celebratedCells.add(r*9+c)));
+    clearTimeout(celebrationTimer);
+    celebrationTimer=setTimeout(()=>{ celebratedCells.clear(); render(); },2100);
+  }
+  function findCompletedNumbers() {
+    const result = new Set();
+    for(let n=1;n<=9;n++) {
+      let count=0, correct=true;
+      for(let r=0;r<9;r++) for(let c=0;c<9;c++) if(values[r][c]===n) {
+        count++;
+        if(solution[r][c]!==n) correct=false;
+      }
+      if(count===9 && correct) result.add(n);
+    }
+    return result;
+  }
   function newGame() {
     const generated=makePuzzle();
     puzzle=copy(generated.p); solution=copy(generated.solved); values=copy(puzzle);
     notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     selected=null; mistakes=0; seconds=0; history=[]; started=true;
+    clearTimeout(celebrationTimer); celebratedCells.clear(); completedNumbers.clear();
+    document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; mistakesEl.textContent="Mistakes: 0";
     statusEl.textContent="A new easy puzzle is ready.";
     notesMode=false; notesToggle.setAttribute("aria-pressed","false");
@@ -96,6 +138,7 @@
         if(n && n===values[sr][sc]) cell.classList.add("same-number");
       }
       if(n && hasConflict(r,c,n)) cell.classList.add("conflict");
+      if(celebratedCells.has(r*9+c)) cell.classList.add("section-complete");
       if(n) cell.textContent=n;
       else if(notes[r][c].size) {
         const mini=document.createElement("span"); mini.className="notes-grid";
@@ -105,6 +148,7 @@
       cell.addEventListener("click",()=>{ selected=[r,c]; render(); });
       boardEl.appendChild(cell);
     }
+    completedNumbers=findCompletedNumbers();
     updateNumberPad();
   }
   function hasConflict(r,c,n) {
@@ -116,7 +160,8 @@
   function updateNumberPad() {
     numberButtons.forEach(btn=>{
       const n=Number(btn.dataset.number);
-      btn.disabled=values.flat().filter(v=>v===n).length>=9;
+      btn.disabled=completedNumbers.has(n);
+      btn.classList.toggle("number-complete",completedNumbers.has(n));
     });
   }
   function saveHistory() { history.push({values:copy(values),notes:notes.map(row=>row.map(s=>new Set(s))),mistakes}); }
@@ -131,16 +176,19 @@
       render(); return;
     }
     if(values[r][c]===n) return;
+    const beforeUnits=completedUnits();
     saveHistory();
     values[r][c]=n; notes[r][c].clear();
     if(n!==solution[r][c]) {
       mistakes++; mistakesEl.textContent=`Mistakes: ${mistakes}`;
       statusEl.textContent="Not quite. Take another look.";
     } else statusEl.textContent="Nice placement.";
+    celebrateNewUnits(beforeUnits);
     render();
     if(values.every((row,ri)=>row.every((v,ci)=>v===solution[ri][ci]))) {
       started=false; clearInterval(timerId);
       statusEl.textContent=`Beautifully done. You finished in ${formatTime(seconds)}.`;
+      document.getElementById("completion-scene").classList.add("visible");
     }
   }
   function erase() {
@@ -169,6 +217,8 @@
   document.getElementById("reset-button").addEventListener("click",()=>{
     values=copy(puzzle); notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     mistakes=0; seconds=0; started=true; history=[]; mistakesEl.textContent="Mistakes: 0";
+    clearTimeout(celebrationTimer); celebratedCells.clear(); completedNumbers.clear();
+    document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; statusEl.textContent="Puzzle restarted."; startTimer(); render();
   });
   notesToggle.addEventListener("click",()=>{
