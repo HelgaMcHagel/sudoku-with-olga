@@ -132,7 +132,7 @@
     celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; mistakesEl.textContent="Mistakes: 0";
-    statusEl.textContent=`A new ${difficulty} puzzle is ready.`;
+    statusEl.textContent=`A new ${difficulty} puzzle is ready · ${81-generated.removed} starting clues.`;
     notesMode=false; notesToggle.setAttribute("aria-pressed","false");
     numberButtons.forEach(b=>b.classList.remove("active"));
     startTimer(); render();
