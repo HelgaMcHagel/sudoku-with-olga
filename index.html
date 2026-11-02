@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <main class="page-shell">
@@ -28,6 +28,14 @@
 
     <section class="game-layout" aria-label="Sudoku game">
       <div class="game-card">
+        <div class="mode-switch" role="group" aria-label="Choose a game mode">
+          <button id="daily-mode-button" class="mode-button active" type="button" aria-pressed="true">Daily Sudoku</button>
+          <button id="practice-mode-button" class="mode-button" type="button" aria-pressed="false">Practice</button>
+        </div>
+        <div class="daily-meta" id="daily-meta">
+          <span class="daily-date" id="daily-date"></span>
+          <span class="daily-message">Your quiet moment is waiting.</span>
+        </div>
         <div class="game-topline">
           <div class="puzzle-heading">
             <span class="mini-label">PUZZLE</span>
@@ -121,6 +129,6 @@
       <span>Made for slower moments <b>·</b> No ads, no rush.</span>
     </footer>
   </main>
-  <script src="sudoku.js?v=5"></script>
+  <script src="sudoku.js?v=6"></script>
 </body>
 </html>
