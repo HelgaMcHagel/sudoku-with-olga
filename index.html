@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
   <main class="page-shell">
@@ -40,19 +40,23 @@
           <div class="puzzle-heading">
             <span class="mini-label">PUZZLE</span>
             <h2>Take it one number at a time.</h2>
-            <label id="difficulty-control" class="difficulty-control" for="difficulty-select">DIFFICULTY
-              <select id="difficulty-select" aria-label="Puzzle difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </label>
-            <span class="daily-difficulty" id="daily-difficulty" hidden><span>DIFFICULTY</span><strong>Medium</strong></span>
           </div>
           <div class="timer-wrap">
-            <div id="timer-display">
+            <div class="timer-info-row">
+              <div class="difficulty-slot">
+                <label id="difficulty-control" class="difficulty-control" for="difficulty-select">DIFFICULTY
+                  <select id="difficulty-select" aria-label="Puzzle difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </label>
+                <span class="daily-difficulty" id="daily-difficulty" hidden><span>DIFFICULTY</span><strong>Medium</strong></span>
+              </div>
+              <div id="timer-display">
               <span class="mini-label">TIME</span>
-              <strong id="timer">00:00</strong>
+                <strong id="timer">00:00</strong>
+              </div>
             </div>
             <button id="timer-toggle" class="timer-toggle" type="button" aria-pressed="true">Hide timer</button>
           </div>
