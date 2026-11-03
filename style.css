@@ -313,3 +313,58 @@ button { font: inherit; }
 .daily-message{font-family:"Playfair Display",serif;font-size:15px;color:var(--ink)}
 .daily-meta[hidden],.difficulty-control[hidden],#new-game-button[hidden]{display:none!important}
 @media(max-width:560px){.mode-switch{padding-bottom:13px;margin-bottom:13px}.mode-button{padding:8px 15px;font-size:12px}.daily-meta{flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:13px}.daily-message{font-size:14px}}
+
+
+/* A quiet monthly history of Daily Sudoku */
+.calendar-panel { margin:0 0 27px; padding:17px 16px 15px; border:1px solid rgba(85,95,83,.16); border-radius:13px; background:rgba(255,253,248,.58); }
+.calendar-heading { display:flex; flex-direction:column; gap:8px; }
+.calendar-kicker { margin:0; color:var(--sage); font-size:10px; font-weight:700; letter-spacing:.17em; }
+.calendar-nav { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.calendar-nav strong { color:var(--ink); font:500 17px "Playfair Display",serif; }
+.calendar-nav button { width:27px; height:27px; border:1px solid rgba(85,95,83,.18); border-radius:50%; background:transparent; color:var(--sage); font-size:19px; line-height:1; cursor:pointer; }
+.calendar-nav button:disabled { opacity:.25; cursor:default; }
+.calendar-weekdays,.calendar-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; text-align:center; }
+.calendar-weekdays { margin-top:13px; color:#999b91; font-size:9px; font-weight:700; }
+.calendar-days { margin-top:6px; }
+.calendar-day,.calendar-blank { position:relative; display:grid; place-items:center; aspect-ratio:1; min-width:0; border:0; border-radius:50%; background:transparent; color:var(--ink); font:500 11px "DM Sans",sans-serif; }
+.calendar-day { cursor:pointer; }
+.calendar-day:hover:not(:disabled) { background:var(--sage-light); }
+.calendar-day.today { box-shadow:inset 0 0 0 1px var(--vermilion); }
+.calendar-day.selected { background:var(--sage); color:white; }
+.calendar-day.completed::after,.calendar-day.played::after { content:""; position:absolute; width:4px; height:4px; bottom:2px; border-radius:50%; background:var(--sage); }
+.calendar-day.selected.completed::after,.calendar-day.selected.played::after { background:#fffdf7; }
+.calendar-day.future { color:#c8c8bf; cursor:default; }
+.calendar-legend { display:flex; align-items:center; gap:6px; margin:11px 0 0; color:var(--muted); font-size:9px; }
+.legend-dot { width:6px; height:6px; display:inline-block; border-radius:50%; background:var(--sage); }
+.legend-dot.played { background:#c5b18b; margin-left:7px; }
+.calendar-day.played::after { background:#c5b18b; }
+.side-note { align-self:start; }
+.fullscreen-button { white-space:nowrap; }
+.game-card:fullscreen { width:100%; height:100%; max-width:none; max-height:none; overflow:auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:18px 24px; border:0; border-radius:0; background:var(--paper); box-shadow:none; }
+.game-card:fullscreen .mode-switch,.game-card:fullscreen .daily-meta,.game-card:fullscreen .game-topline,.game-card:fullscreen .status-row,.game-card:fullscreen .tools-row,.game-card:fullscreen .bottom-row { width:min(100%,900px); flex-shrink:0; }
+.game-card:fullscreen .board-stage { width:min(68vh, min(76vw, 720px)); max-width:none; flex:0 1 auto; }
+.game-card:fullscreen .number-pad { width:min(68vh, min(76vw, 720px)); max-width:none; flex-shrink:0; }
+.game-card:fullscreen .number-button { min-height:clamp(36px,5vh,54px); }
+.game-card:fullscreen .cell { font-size:clamp(22px,5.8cqi,35px); }
+.game-card:fullscreen .mode-switch { padding-bottom:8px; margin-bottom:2px; }
+.game-card:fullscreen .daily-meta { margin-bottom:2px; }
+.game-card:fullscreen .status-row { margin:2px 0 0; }
+.game-card:fullscreen .number-pad { margin:5px auto; }
+.game-card:fullscreen .bottom-row { margin-top:2px; }
+@media(max-width:800px) {
+  .calendar-panel { grid-column:1/-1; margin-bottom:14px; }
+  .calendar-heading { flex-direction:row; align-items:center; justify-content:space-between; }
+  .calendar-weekdays,.calendar-days { max-width:360px; margin-left:auto; margin-right:auto; }
+  .calendar-legend { justify-content:center; }
+}
+@media(max-width:560px) {
+  .calendar-panel { padding:13px 14px; }
+  .calendar-day,.calendar-blank { font-size:12px; }
+  .game-card:fullscreen { justify-content:flex-start; padding:10px 9px; }
+  .game-card:fullscreen .board-stage { width:min(82vw,52vh); }
+  .game-card:fullscreen .number-pad { width:min(82vw,52vh); }
+  .game-card:fullscreen .mode-button { padding:7px 13px; }
+  .game-card:fullscreen .daily-message { font-size:12px; }
+  .game-card:fullscreen .game-topline h2 { font-size:15px; }
+  .game-card:fullscreen .number-button { min-height:32px; }
+}
