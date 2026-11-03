@@ -19,6 +19,7 @@
   let difficulty = "easy";
   const difficultySettings = { easy: 36, medium: 46, hard: 52 };
   const difficultySelect = document.getElementById("difficulty-select");
+  const dailyDifficulty = document.getElementById("daily-difficulty");
 
   const copy = grid => grid.map(row => [...row]);
   let randomSource = Math.random;
@@ -48,7 +49,7 @@
     const daily=gameMode==="daily";
     dailyModeButton.classList.toggle("active",daily); practiceModeButton.classList.toggle("active",!daily);
     dailyModeButton.setAttribute("aria-pressed",String(daily)); practiceModeButton.setAttribute("aria-pressed",String(!daily));
-    dailyMeta.hidden=!daily; difficultySelect.hidden=daily; newGameButton.hidden=daily;
+    dailyMeta.hidden=!daily; difficultySelect.hidden=daily; dailyDifficulty.hidden=!daily; newGameButton.hidden=daily;
     dailyDateEl.textContent=dateFromKey(selectedDailyDate).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
   }
   function renderCalendar() {
