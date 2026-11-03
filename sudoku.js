@@ -114,7 +114,9 @@
       mistakes=Number(saved.mistakes)||0; seconds=Number(saved.seconds)||0; started=!saved.completed;
       mistakesEl.textContent="Mistakes: "+mistakes; timerEl.textContent=formatTime(seconds);
       statusEl.textContent=saved.completed
-        ? (gameMode==="daily"?"Today's puzzle is complete. Well done.":"Practice puzzle completed. Well done.")
+        ? (gameMode==="daily"
+            ? `The Daily Sudoku for ${dateFromKey(selectedDailyDate).toLocaleDateString(undefined,{month:"long",day:"numeric"})} is complete. Well done.`
+            : "Practice puzzle completed. Well done.")
         : "Welcome back. Your puzzle is just as you left it.";
       if(saved.completed)document.getElementById("completion-scene").classList.add("visible");
       return true;
