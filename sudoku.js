@@ -28,19 +28,67 @@
   const dailyMeta = document.getElementById("daily-meta");
   const dailyDateEl = document.getElementById("daily-date");
   const newGameButton = document.getElementById("new-game-button");
+  const calendarDaysEl = document.getElementById("calendar-days");
+  const calendarMonthEl = document.getElementById("calendar-month");
+  const calendarPrevButton = document.getElementById("calendar-prev");
+  const calendarNextButton = document.getElementById("calendar-next");
+  const fullscreenButton = document.getElementById("fullscreen-button");
+  const gameCard = document.querySelector(".game-card");
   let gameMode = "daily";
-  const todayKey = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+  const todayKey = (date=new Date()) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+  const dateFromKey = key => { const [y,m,d]=key.split("-").map(Number); return new Date(y,m-1,d); };
+  let selectedDailyDate = todayKey();
+  let calendarViewDate = new Date();
   const seedFromString = value => { let h=2166136261; for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619);} return h>>>0; };
   const seededRandom = seed => { let a=seed>>>0; return () => { a+=0x6D2B79F5; let t=a; t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; }; };
   const progressStorageKey = () => gameMode==="daily"
-    ? "sudoku-with-olga-daily-"+todayKey()
+    ? "sudoku-with-olga-daily-"+selectedDailyDate
     : "sudoku-with-olga-practice-"+difficulty;
   function updateModeUI() {
     const daily=gameMode==="daily";
     dailyModeButton.classList.toggle("active",daily); practiceModeButton.classList.toggle("active",!daily);
     dailyModeButton.setAttribute("aria-pressed",String(daily)); practiceModeButton.setAttribute("aria-pressed",String(!daily));
     dailyMeta.hidden=!daily; difficultySelect.hidden=daily; newGameButton.hidden=daily;
-    dailyDateEl.textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+    dailyDateEl.textContent=dateFromKey(selectedDailyDate).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+  }
+  function renderCalendar() {
+    if(!calendarDaysEl)return;
+    const year=calendarViewDate.getFullYear(), month=calendarViewDate.getMonth();
+    calendarMonthEl.textContent=calendarViewDate.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+    const firstDay=new Date(year,month,1);
+    const offset=(firstDay.getDay()+6)%7;
+    const daysInMonth=new Date(year,month+1,0).getDate();
+    const today=todayKey();
+    calendarDaysEl.innerHTML="";
+    for(let i=0;i<offset;i++){
+      const blank=document.createElement("span"); blank.className="calendar-blank"; blank.setAttribute("aria-hidden","true"); calendarDaysEl.appendChild(blank);
+    }
+    for(let day=1;day<=daysInMonth;day++){
+      const dateKey=todayKey(new Date(year,month,day));
+      const button=document.createElement("button");
+      button.type="button"; button.className="calendar-day"; button.textContent=day;
+      button.setAttribute("aria-label",dateFromKey(dateKey).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}));
+      if(dateKey===today)button.classList.add("today");
+      if(dateKey===selectedDailyDate)button.classList.add("selected");
+      if(dateKey>today){button.disabled=true;button.classList.add("future");}
+      else {
+        try {
+          const saved=JSON.parse(localStorage.getItem("sudoku-with-olga-daily-"+dateKey)||"null");
+          if(saved){button.classList.add(saved.completed?"completed":"played");}
+        } catch(_){}
+      }
+      button.addEventListener("click",()=>{
+        if(dateKey===selectedDailyDate&&gameMode==="daily")return;
+        if(gameMode==="daily")saveGameProgress();
+        gameMode="daily"; selectedDailyDate=dateKey;
+        calendarViewDate=new Date(year,month,1);
+        newGame();
+      });
+      calendarDaysEl.appendChild(button);
+    }
+    const currentMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+    calendarPrevButton.disabled=year<2020;
+    calendarNextButton.disabled=year===currentMonth.getFullYear()&&month>=currentMonth.getMonth() || calendarViewDate>currentMonth;
   }
   function saveGameProgress() {
     if(!values.length)return;
@@ -49,6 +97,7 @@
         puzzle,solution,values,notes:notes.map(row=>row.map(set=>[...set])),
         mistakes,seconds,completed:!started
       }));
+      if(gameMode==="daily")renderCalendar();
     } catch (_) {}
   }
   function restoreGameProgress() {
@@ -181,7 +230,7 @@
     updateModeUI();
     const daily=gameMode==="daily";
     difficulty=daily?"medium":difficultySelect.value;
-    const generated=makePuzzle(daily?seedFromString("sudoku-with-olga-"+todayKey()+"-medium"):null);
+    const generated=makePuzzle(daily?seedFromString("sudoku-with-olga-"+selectedDailyDate+"-medium"):null);
     puzzle=copy(generated.p); solution=copy(generated.solved); values=copy(puzzle);
     notes=Array.from({length:9},()=>Array.from({length:9},()=>new Set()));
     selected=null; mistakes=0; seconds=0; history=[]; started=true;
@@ -196,6 +245,7 @@
     if(!restored){timerEl.textContent="00:00";mistakesEl.textContent="Mistakes: 0";}
     if(!started)clearInterval(timerId);else startTimer();
     render();
+    renderCalendar();
     if(!restored)saveGameProgress();
   }
   function render() {
@@ -295,6 +345,26 @@
   document.getElementById("erase-button").addEventListener("click",erase);
   document.getElementById("undo-button").addEventListener("click",undo);
   document.getElementById("hint-button").addEventListener("click",hint);
+  calendarPrevButton.addEventListener("click",()=>{
+    calendarViewDate=new Date(calendarViewDate.getFullYear(),calendarViewDate.getMonth()-1,1);
+    renderCalendar();
+  });
+  calendarNextButton.addEventListener("click",()=>{
+    const next=new Date(calendarViewDate.getFullYear(),calendarViewDate.getMonth()+1,1);
+    const current=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+    if(next<=current){calendarViewDate=next;renderCalendar();}
+  });
+  fullscreenButton.addEventListener("click",async()=>{
+    try {
+      if(!document.fullscreenElement) await gameCard.requestFullscreen();
+      else await document.exitFullscreen();
+    } catch(_){statusEl.textContent="Fullscreen is not available in this browser.";}
+  });
+  document.addEventListener("fullscreenchange",()=>{
+    const active=document.fullscreenElement===gameCard;
+    fullscreenButton.textContent=active?"⛶ Exit fullscreen":"⛶ Fullscreen";
+    fullscreenButton.setAttribute("aria-label",active?"Exit fullscreen":"Enter fullscreen");
+  });
   timerToggle.addEventListener("click",()=>{
     const visible = timerToggle.getAttribute("aria-pressed") !== "true";
     timerToggle.setAttribute("aria-pressed",String(visible));
