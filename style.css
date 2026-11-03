@@ -377,3 +377,20 @@ button { font: inherit; }
 @media(max-width:560px) {
   .daily-difficulty { margin-top:3px; margin-left:0; }
 }
+
+
+/* Keep difficulty in one consistent position, beside the timer */
+.timer-wrap { align-items:flex-end; }
+.timer-info-row { display:flex; align-items:center; justify-content:flex-end; gap:14px; }
+.difficulty-slot { display:flex; align-items:center; justify-content:flex-end; min-width:132px; }
+.difficulty-control { margin:0; white-space:nowrap; }
+.daily-difficulty { margin:0; white-space:nowrap; }
+#timer-display { text-align:right; }
+@media(max-width:560px) {
+  .timer-info-row { gap:9px; }
+  .difficulty-slot { min-width:0; }
+  .difficulty-control { gap:5px; font-size:9px; }
+  .difficulty-control select { padding:6px 21px 6px 9px; font-size:11px; }
+  .daily-difficulty { margin:0; gap:5px; font-size:9px; }
+  .daily-difficulty strong { padding:6px 9px; font-size:10px; }
+}
