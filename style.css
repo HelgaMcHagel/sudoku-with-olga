@@ -368,3 +368,12 @@ button { font: inherit; }
   .game-card:fullscreen .game-topline h2 { font-size:15px; }
   .game-card:fullscreen .number-button { min-height:32px; }
 }
+
+
+/* Daily puzzle difficulty: visible, informative, and deliberately not editable */
+.daily-difficulty { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:10px; font-weight:700; letter-spacing:.13em; }
+.daily-difficulty[hidden] { display:none!important; }
+.daily-difficulty strong { display:inline-block; border:1px solid #d9dfd4; border-radius:18px; background:#f3f6f0; color:#536b57; padding:7px 11px; font:600 11px "DM Sans",sans-serif; letter-spacing:0; }
+@media(max-width:560px) {
+  .daily-difficulty { margin-top:3px; }
+}
