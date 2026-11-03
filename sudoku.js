@@ -79,7 +79,7 @@
       }
       button.addEventListener("click",()=>{
         if(dateKey===selectedDailyDate&&gameMode==="daily")return;
-        if(gameMode==="daily")saveGameProgress();
+        saveGameProgress();
         gameMode="daily"; selectedDailyDate=dateKey;
         calendarViewDate=new Date(year,month,1);
         newGame();
@@ -238,7 +238,9 @@
     celebratedCells.clear(); completedNumbers.clear(); flashedNumbers.clear();
     document.getElementById("completion-scene").classList.remove("visible");
     timerEl.textContent="00:00"; mistakesEl.textContent="Mistakes: 0";
-    statusEl.textContent=daily?"Today's shared Medium puzzle is ready.":`A new ${difficulty} puzzle is ready · ${81-generated.removed} starting clues.`;
+    statusEl.textContent=daily
+      ? `Daily puzzle for ${dateFromKey(selectedDailyDate).toLocaleDateString(undefined,{month:"long",day:"numeric"})} is ready.`
+      : `A new ${difficulty} puzzle is ready · ${81-generated.removed} starting clues.`;
     notesMode=false; notesToggle.setAttribute("aria-pressed","false");
     numberButtons.forEach(b=>b.classList.remove("active"));
     const restored=!forceNew&&restoreGameProgress();
